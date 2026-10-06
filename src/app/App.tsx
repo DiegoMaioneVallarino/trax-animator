@@ -27,6 +27,10 @@ import {
   useAudio,
 } from "../hooks/useAudio";
 
+import {
+  BackgroundControls,
+} from "../components/Controls/BackgroundControls";
+
 import "./App.css";
 import {
   VinylControls,
@@ -42,7 +46,20 @@ export default function App() {
   const audio = useAudio({
     url: project.audio.url,
   });
+function updateBackground(
+  changes: Partial<
+    VideoProject["background"]
+  >,
+) {
+  setProject((current) => ({
+    ...current,
 
+    background: {
+      ...current.background,
+      ...changes,
+    },
+  }));
+}
   function setAudio(
     file: File,
   ) {
@@ -169,6 +186,10 @@ function updateVinyl(
 <VinylControls
   vinyl={project.vinyl}
   onChange={updateVinyl}
+/>
+<BackgroundControls
+  background={project.background}
+  onChange={updateBackground}
 />
         <AudioControls
           isPlaying={

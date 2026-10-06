@@ -10,13 +10,26 @@ export interface AudioSettings {
   name: string | null;
 }
 
+export type BackgroundMotion =
+  | "static"
+  | "zoom-in"
+  | "zoom-out"
+  | "drift-left"
+  | "drift-right";
+
 export interface BackgroundSettings {
   file: File | null;
   url: string | null;
 
+  x: number;
+  y: number;
+
   scale: number;
   blur: number;
   brightness: number;
+
+  motion: BackgroundMotion;
+  motionAmount: number;
 }
 
 export interface VinylSettings {

@@ -29,15 +29,14 @@ export function renderFrame({
     height,
   );
 
-  if (backgroundImage) {
-    drawBackground(
-      ctx,
-      backgroundImage,
-      width,
-      height,
-      project.background.scale,
-    );
-  }
+if (backgroundImage) {
+  drawBackground(
+    ctx,
+    backgroundImage,
+    project,
+    time,
+  );
+}
 
   if (vinylImage) {
     drawVinyl(
@@ -52,10 +51,17 @@ export function renderFrame({
 function drawBackground(
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement,
-  width: number,
-  height: number,
-  scale: number,
+  project: RenderFrameOptions["project"],
+  time: number,
 ) {
+  const {
+    width,
+    height,
+  } = project.output;
+
+  const background =
+    project.background;
+
   const imageRatio =
     image.naturalWidth /
     image.naturalHeight;
@@ -63,27 +69,95 @@ function drawBackground(
   const canvasRatio =
     width / height;
 
-  let drawWidth: number;
-  let drawHeight: number;
+  let baseWidth: number;
+  let baseHeight: number;
 
   if (imageRatio > canvasRatio) {
-    drawHeight = height;
-    drawWidth =
-      drawHeight * imageRatio;
+    baseHeight = height;
+
+    baseWidth =
+      baseHeight * imageRatio;
   } else {
-    drawWidth = width;
-    drawHeight =
-      drawWidth / imageRatio;
+    baseWidth = width;
+
+    baseHeight =
+      baseWidth / imageRatio;
   }
 
-  drawWidth *= scale;
-  drawHeight *= scale;
+  let animatedScale = 1;
+  let driftX = 0;
+
+  const motionProgress =
+    Math.min(
+      time / 60,
+      1,
+    );
+
+  switch (background.motion) {
+    case "zoom-in":
+      animatedScale =
+        1 +
+        background.motionAmount *
+          motionProgress;
+
+      break;
+
+    case "zoom-out":
+      animatedScale =
+        1 +
+        background.motionAmount *
+          (1 - motionProgress);
+
+      break;
+
+    case "drift-left":
+      driftX =
+        -width *
+        background.motionAmount *
+        motionProgress;
+
+      break;
+
+    case "drift-right":
+      driftX =
+        width *
+        background.motionAmount *
+        motionProgress;
+
+      break;
+  }
+
+  const drawWidth =
+    baseWidth *
+    background.scale *
+    animatedScale;
+
+  const drawHeight =
+    baseHeight *
+    background.scale *
+    animatedScale;
+
+  const overflowX =
+    drawWidth - width;
+
+  const overflowY =
+    drawHeight - height;
 
   const x =
-    (width - drawWidth) / 2;
+    -overflowX *
+      background.x +
+    driftX;
 
   const y =
-    (height - drawHeight) / 2;
+    -overflowY *
+    background.y;
+
+  ctx.save();
+
+  ctx.filter = [
+    `blur(${background.blur}px)`,
+    `brightness(${background.brightness})`,
+  ].join(" ");
 
   ctx.drawImage(
     image,
@@ -92,6 +166,8 @@ function drawBackground(
     drawWidth,
     drawHeight,
   );
+
+  ctx.restore();
 }
 
 function drawVinyl(

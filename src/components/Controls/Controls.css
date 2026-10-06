@@ -101,3 +101,17 @@
   width: 100%;
   margin: 0;
 }
+
+.control__select {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  color: #ddd;
+  background: #222;
+
+  border: 1px solid #333;
+  border-radius: 8px;
+
+  outline: none;
+}

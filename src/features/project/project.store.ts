@@ -11,13 +11,19 @@ export const defaultProject: VideoProject = {
   },
 
   background: {
-    file: null,
-    url: null,
+  file: null,
+  url: null,
 
-    scale: 1,
-    blur: 0,
-    brightness: 1,
-  },
+  x: 0.5,
+  y: 0.5,
+
+  scale: 1,
+  blur: 0,
+  brightness: 1,
+
+  motion: "static",
+  motionAmount: 0.05,
+},
 
   vinyl: {
     file: null,
