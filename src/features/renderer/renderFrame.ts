@@ -116,6 +116,9 @@ function drawVinyl(
     Math.min(width, height) *
     size;
 
+  const radius =
+    diameter / 2;
+
   const centerX =
     width * x;
 
@@ -140,13 +143,52 @@ function drawVinyl(
 
   ctx.rotate(angle);
 
-  ctx.drawImage(
-    image,
-    -diameter / 2,
-    -diameter / 2,
-    diameter,
-    diameter,
+  // Circular mask
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    0,
+    radius,
+    0,
+    Math.PI * 2,
   );
+
+  ctx.closePath();
+  ctx.clip();
+
+  // Draw image inside circle
+  const sourceSize =
+  Math.min(
+    image.naturalWidth,
+    image.naturalHeight,
+  );
+
+const sourceX =
+  (
+    image.naturalWidth -
+    sourceSize
+  ) / 2;
+
+const sourceY =
+  (
+    image.naturalHeight -
+    sourceSize
+  ) / 2;
+
+ctx.drawImage(
+  image,
+
+  sourceX,
+  sourceY,
+  sourceSize,
+  sourceSize,
+
+  -radius,
+  -radius,
+  diameter,
+  diameter,
+);
 
   ctx.restore();
 }
