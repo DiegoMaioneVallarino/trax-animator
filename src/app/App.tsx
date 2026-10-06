@@ -12,12 +12,20 @@ import {
 } from "../components/UploadPanel/UploadPanel";
 
 import {
+  AudioControls,
+} from "../components/Controls/AudioControls";
+
+import {
   createProject,
 } from "../features/project/project.store";
 
 import type {
   VideoProject,
 } from "../features/project/project.types";
+
+import {
+  useAudio,
+} from "../hooks/useAudio";
 
 import "./App.css";
 
@@ -29,24 +37,27 @@ export default function App() {
     createProject,
   );
 
-  useEffect(() => {
-    return () => {
-      if (project.background.url) {
-        URL.revokeObjectURL(
-          project.background.url,
-        );
-      }
+  const audio = useAudio({
+    url: project.audio.url,
+  });
 
-      if (project.vinyl.url) {
-        URL.revokeObjectURL(
-          project.vinyl.url,
-        );
-      }
-    };
-  }, [
-    project.background.url,
-    project.vinyl.url,
-  ]);
+  function setAudio(
+    file: File,
+  ) {
+    const url =
+      URL.createObjectURL(file);
+
+    setProject((current) => ({
+      ...current,
+
+      audio: {
+        ...current.audio,
+        file,
+        url,
+        name: file.name,
+      },
+    }));
+  }
 
   function setBackground(
     file: File,
@@ -82,11 +93,39 @@ export default function App() {
     }));
   }
 
+  useEffect(() => {
+    return () => {
+      if (project.audio.url) {
+        URL.revokeObjectURL(
+          project.audio.url,
+        );
+      }
+
+      if (project.background.url) {
+        URL.revokeObjectURL(
+          project.background.url,
+        );
+      }
+
+      if (project.vinyl.url) {
+        URL.revokeObjectURL(
+          project.vinyl.url,
+        );
+      }
+    };
+  }, [
+    project.audio.url,
+    project.background.url,
+    project.vinyl.url,
+  ]);
+
   return (
     <main className="app">
       <header className="app__header">
         <div>
-          <h1>Trax Animator</h1>
+          <h1>
+            Trax Animator
+          </h1>
 
           <p>
             Vinyl video generator
@@ -97,14 +136,36 @@ export default function App() {
       <section className="app__workspace">
         <VideoPreview
           project={project}
+          time={audio.currentTime}
         />
 
         <UploadPanel
+          onAudioChange={
+            setAudio
+          }
           onBackgroundChange={
             setBackground
           }
           onVinylChange={
             setVinyl
+          }
+        />
+
+        <AudioControls
+          isPlaying={
+            audio.isPlaying
+          }
+          currentTime={
+            audio.currentTime
+          }
+          duration={
+            audio.duration
+          }
+          onToggle={() => {
+            void audio.toggle();
+          }}
+          onSeek={
+            audio.seek
           }
         />
       </section>

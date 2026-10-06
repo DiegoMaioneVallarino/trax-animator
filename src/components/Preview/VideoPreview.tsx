@@ -15,6 +15,7 @@ import "./VideoPreview.css";
 
 interface VideoPreviewProps {
   project: VideoProject;
+  time: number;
 }
 
 function loadImage(
@@ -24,34 +25,38 @@ function loadImage(
     return Promise.resolve(null);
   }
 
-  return new Promise((resolve, reject) => {
-    const image = new Image();
+  return new Promise(
+    (resolve, reject) => {
+      const image =
+        new Image();
 
-    image.onload = () => resolve(image);
-    image.onerror = reject;
+      image.onload = () =>
+        resolve(image);
 
-    image.src = url;
-  });
+      image.onerror =
+        reject;
+
+      image.src = url;
+    },
+  );
 }
 
 export function VideoPreview({
   project,
+  time,
 }: VideoPreviewProps) {
   const canvasRef =
     useRef<HTMLCanvasElement>(null);
 
-  const projectRef =
-    useRef(project);
-
   const backgroundRef =
-    useRef<HTMLImageElement | null>(null);
+    useRef<HTMLImageElement | null>(
+      null,
+    );
 
   const vinylRef =
-    useRef<HTMLImageElement | null>(null);
-
-  useEffect(() => {
-    projectRef.current = project;
-  }, [project]);
+    useRef<HTMLImageElement | null>(
+      null,
+    );
 
   useEffect(() => {
     let cancelled = false;
@@ -60,7 +65,8 @@ export function VideoPreview({
       project.background.url,
     ).then((image) => {
       if (!cancelled) {
-        backgroundRef.current = image;
+        backgroundRef.current =
+          image;
       }
     });
 
@@ -76,7 +82,8 @@ export function VideoPreview({
       project.vinyl.url,
     ).then((image) => {
       if (!cancelled) {
-        vinylRef.current = image;
+        vinylRef.current =
+          image;
       }
     });
 
@@ -86,7 +93,8 @@ export function VideoPreview({
   }, [project.vinyl.url]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas =
+      canvasRef.current;
 
     if (!canvas) {
       return;
@@ -95,37 +103,18 @@ export function VideoPreview({
     const renderer =
       new Renderer(canvas);
 
-    let animationFrame = 0;
-
-    const startTime =
-      performance.now();
-
-    const animate = (
-      now: number,
-    ) => {
-      const time =
-        (now - startTime) / 1000;
-
-      renderer.render(
-        projectRef.current,
-        backgroundRef.current,
-        vinylRef.current,
-        time,
-      );
-
-      animationFrame =
-        requestAnimationFrame(animate);
-    };
-
-    animationFrame =
-      requestAnimationFrame(animate);
-
-    return () => {
-      cancelAnimationFrame(
-        animationFrame,
-      );
-    };
-  }, []);
+    renderer.render(
+      project,
+      backgroundRef.current,
+      vinylRef.current,
+      time,
+    );
+  }, [
+    project,
+    time,
+    project.background.url,
+    project.vinyl.url,
+  ]);
 
   return (
     <div className="video-preview">

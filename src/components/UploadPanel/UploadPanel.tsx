@@ -1,19 +1,35 @@
 import "./UploadPanel.css";
 
 interface UploadPanelProps {
-  onBackgroundChange:
-    (file: File) => void;
-
-  onVinylChange:
-    (file: File) => void;
+  onAudioChange: (file: File) => void;
+  onBackgroundChange: (file: File) => void;
+  onVinylChange: (file: File) => void;
 }
 
 export function UploadPanel({
+  onAudioChange,
   onBackgroundChange,
   onVinylChange,
 }: UploadPanelProps) {
   return (
     <div className="upload-panel">
+      <label className="upload-box">
+        <span>Audio</span>
+
+        <input
+          type="file"
+          accept="audio/*"
+          onChange={(event) => {
+            const file =
+              event.target.files?.[0];
+
+            if (file) {
+              onAudioChange(file);
+            }
+          }}
+        />
+      </label>
+
       <label className="upload-box">
         <span>Background</span>
 
