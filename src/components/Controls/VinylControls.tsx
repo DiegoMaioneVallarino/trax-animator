@@ -138,6 +138,164 @@ export function VinylControls({
           }}
         />
       </div>
+
+      <div className="control">
+  <div className="control__header">
+    <label>
+      Border
+    </label>
+
+    <span>
+      {vinyl.borderWidth}px
+    </span>
+  </div>
+
+  <input
+    type="range"
+    min={0}
+    max={30}
+    step={1}
+    value={vinyl.borderWidth}
+    onChange={(event) => {
+      onChange({
+        borderWidth: Number(
+          event.target.value,
+        ),
+      });
+    }}
+  />
+</div>
+
+<div className="control">
+  <div className="control__header">
+    <label>
+      Border color
+    </label>
+
+    <input
+      type="color"
+      value={vinyl.borderColor}
+      onChange={(event) => {
+        onChange({
+          borderColor:
+            event.target.value,
+        });
+      }}
+    />
+  </div>
+</div>
+
+<div className="control">
+  <div className="control__header">
+    <label>
+      Shadow
+    </label>
+
+    <span>
+      {Math.round(
+        vinyl.shadowOpacity *
+          100,
+      )}
+      %
+    </span>
+  </div>
+
+  <input
+    type="range"
+    min={0}
+    max={1}
+    step={0.01}
+    value={vinyl.shadowOpacity}
+    onChange={(event) => {
+      onChange({
+        shadowOpacity: Number(
+          event.target.value,
+        ),
+      });
+    }}
+  />
+</div>
+
+<div className="control">
+  <div className="control__header">
+    <label>
+      Shadow blur
+    </label>
+
+    <span>
+      {vinyl.shadowBlur}px
+    </span>
+  </div>
+
+  <input
+    type="range"
+    min={0}
+    max={100}
+    step={1}
+    value={vinyl.shadowBlur}
+    onChange={(event) => {
+      onChange({
+        shadowBlur: Number(
+          event.target.value,
+        ),
+      });
+    }}
+  />
+</div>
+
+<div className="control">
+  <div className="control__header">
+    <label>
+      Shadow X
+    </label>
+
+    <span>
+      {vinyl.shadowOffsetX}px
+    </span>
+  </div>
+
+  <input
+    type="range"
+    min={-100}
+    max={100}
+    step={1}
+    value={vinyl.shadowOffsetX}
+    onChange={(event) => {
+      onChange({
+        shadowOffsetX: Number(
+          event.target.value,
+        ),
+      });
+    }}
+  />
+</div>
+
+<div className="control">
+  <div className="control__header">
+    <label>
+      Shadow Y
+    </label>
+
+    <span>
+      {vinyl.shadowOffsetY}px
+    </span>
+  </div>
+
+  <input
+    type="range"
+    min={-100}
+    max={100}
+    step={1}
+    value={vinyl.shadowOffsetY}
+    onChange={(event) => {
+      onChange({
+        shadowOffsetY: Number(
+          event.target.value,
+        ),
+      });
+    }}
+  />
+</div>
     </section>
   );
 }

@@ -181,28 +181,24 @@ function drawVinyl(
     height,
   } = project.output;
 
-  const {
-    x,
-    y,
-    size,
-    rpm,
-  } = project.vinyl;
+  const vinyl =
+    project.vinyl;
 
   const diameter =
     Math.min(width, height) *
-    size;
+    vinyl.size;
 
   const radius =
     diameter / 2;
 
   const centerX =
-    width * x;
+    width * vinyl.x;
 
   const centerY =
-    height * y;
+    height * vinyl.y;
 
   const rotationsPerSecond =
-    rpm / 60;
+    vinyl.rpm / 60;
 
   const angle =
     time *
@@ -219,7 +215,46 @@ function drawVinyl(
 
   ctx.rotate(angle);
 
-  // Circular mask
+  // Shadow
+  if (
+    vinyl.shadowOpacity > 0 &&
+    vinyl.shadowBlur > 0
+  ) {
+    ctx.save();
+
+    ctx.shadowColor =
+      `rgba(0, 0, 0, ${vinyl.shadowOpacity})`;
+
+    ctx.shadowBlur =
+      vinyl.shadowBlur;
+
+    ctx.shadowOffsetX =
+      vinyl.shadowOffsetX;
+
+    ctx.shadowOffsetY =
+      vinyl.shadowOffsetY;
+
+    ctx.fillStyle =
+      "rgba(0, 0, 0, 1)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      radius,
+      0,
+      Math.PI * 2,
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  // Circular image
+  ctx.save();
+
   ctx.beginPath();
 
   ctx.arc(
@@ -230,41 +265,63 @@ function drawVinyl(
     Math.PI * 2,
   );
 
-  ctx.closePath();
   ctx.clip();
 
-  // Draw image inside circle
   const sourceSize =
-  Math.min(
-    image.naturalWidth,
-    image.naturalHeight,
+    Math.min(
+      image.naturalWidth,
+      image.naturalHeight,
+    );
+
+  const sourceX =
+    (
+      image.naturalWidth -
+      sourceSize
+    ) / 2;
+
+  const sourceY =
+    (
+      image.naturalHeight -
+      sourceSize
+    ) / 2;
+
+  ctx.drawImage(
+    image,
+
+    sourceX,
+    sourceY,
+    sourceSize,
+    sourceSize,
+
+    -radius,
+    -radius,
+    diameter,
+    diameter,
   );
 
-const sourceX =
-  (
-    image.naturalWidth -
-    sourceSize
-  ) / 2;
+  ctx.restore();
 
-const sourceY =
-  (
-    image.naturalHeight -
-    sourceSize
-  ) / 2;
+  // Border
+  if (vinyl.borderWidth > 0) {
+    ctx.beginPath();
 
-ctx.drawImage(
-  image,
+    ctx.arc(
+      0,
+      0,
+      radius -
+        vinyl.borderWidth / 2,
+      0,
+      Math.PI * 2,
+    );
 
-  sourceX,
-  sourceY,
-  sourceSize,
-  sourceSize,
+    ctx.strokeStyle =
+      vinyl.borderColor;
 
-  -radius,
-  -radius,
-  diameter,
-  diameter,
-);
+    ctx.lineWidth =
+      vinyl.borderWidth;
+
+    ctx.stroke();
+  }
 
   ctx.restore();
 }

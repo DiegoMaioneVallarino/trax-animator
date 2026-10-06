@@ -41,6 +41,14 @@ export interface VinylSettings {
 
   size: number;
   rpm: number;
+
+  borderWidth: number;
+  borderColor: string;
+
+  shadowBlur: number;
+  shadowOpacity: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
 }
 
 export interface OutputSettings {
