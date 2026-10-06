@@ -1,0 +1,27 @@
+.upload-panel {
+  display: flex;
+  gap: 12px;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 16px;
+
+  background: #1a1a1a;
+  border: 1px solid #2d2d2d;
+  border-radius: 12px;
+
+  cursor: pointer;
+}
+
+.upload-box span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.upload-box input {
+  font-size: 12px;
+}
