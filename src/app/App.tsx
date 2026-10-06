@@ -28,7 +28,9 @@ import {
 } from "../hooks/useAudio";
 
 import "./App.css";
-
+import {
+  VinylControls,
+} from "../components/Controls/VinylControls";
 export default function App() {
   const [
     project,
@@ -118,7 +120,20 @@ export default function App() {
     project.background.url,
     project.vinyl.url,
   ]);
+function updateVinyl(
+  changes: Partial<
+    VideoProject["vinyl"]
+  >,
+) {
+  setProject((current) => ({
+    ...current,
 
+    vinyl: {
+      ...current.vinyl,
+      ...changes,
+    },
+  }));
+}
   return (
     <main className="app">
       <header className="app__header">
@@ -135,9 +150,10 @@ export default function App() {
 
       <section className="app__workspace">
         <VideoPreview
-          project={project}
-          time={audio.currentTime}
-        />
+  project={project}
+  time={audio.currentTime}
+  onVinylChange={updateVinyl}
+/>
 
         <UploadPanel
           onAudioChange={
@@ -150,7 +166,10 @@ export default function App() {
             setVinyl
           }
         />
-
+<VinylControls
+  vinyl={project.vinyl}
+  onChange={updateVinyl}
+/>
         <AudioControls
           isPlaying={
             audio.isPlaying

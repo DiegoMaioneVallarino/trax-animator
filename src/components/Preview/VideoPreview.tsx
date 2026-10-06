@@ -1,10 +1,12 @@
 import {
   useEffect,
   useRef,
+  useState,
 } from "react";
 
 import type {
   VideoProject,
+  VinylSettings,
 } from "../../features/project/project.types";
 
 import {
@@ -16,6 +18,10 @@ import "./VideoPreview.css";
 interface VideoPreviewProps {
   project: VideoProject;
   time: number;
+
+  onVinylChange: (
+    changes: Partial<VinylSettings>,
+  ) => void;
 }
 
 function loadImage(
@@ -27,14 +33,12 @@ function loadImage(
 
   return new Promise(
     (resolve, reject) => {
-      const image =
-        new Image();
+      const image = new Image();
 
       image.onload = () =>
         resolve(image);
 
-      image.onerror =
-        reject;
+      image.onerror = reject;
 
       image.src = url;
     },
@@ -44,6 +48,7 @@ function loadImage(
 export function VideoPreview({
   project,
   time,
+  onVinylChange,
 }: VideoPreviewProps) {
   const canvasRef =
     useRef<HTMLCanvasElement>(null);
@@ -57,6 +62,9 @@ export function VideoPreview({
     useRef<HTMLImageElement | null>(
       null,
     );
+
+  const [isDragging, setIsDragging] =
+    useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,15 +120,177 @@ export function VideoPreview({
   }, [
     project,
     time,
-    project.background.url,
-    project.vinyl.url,
   ]);
+
+  function getPointerPosition(
+    event:
+      React.PointerEvent<HTMLCanvasElement>,
+  ) {
+    const canvas =
+      canvasRef.current;
+
+    if (!canvas) {
+      return null;
+    }
+
+    const rect =
+      canvas.getBoundingClientRect();
+
+    const x =
+      (event.clientX - rect.left) /
+      rect.width;
+
+    const y =
+      (event.clientY - rect.top) /
+      rect.height;
+
+    return {
+      x,
+      y,
+    };
+  }
+
+  function isPointerOverVinyl(
+    x: number,
+    y: number,
+  ) {
+    const {
+      width,
+      height,
+    } = project.output;
+
+    const vinylDiameter =
+      Math.min(
+        width,
+        height,
+      ) * project.vinyl.size;
+
+    const radiusX =
+      vinylDiameter /
+      width /
+      2;
+
+    const radiusY =
+      vinylDiameter /
+      height /
+      2;
+
+    const dx =
+      (x - project.vinyl.x) /
+      radiusX;
+
+    const dy =
+      (y - project.vinyl.y) /
+      radiusY;
+
+    return (
+      dx * dx +
+        dy * dy <=
+      1
+    );
+  }
+
+  function handlePointerDown(
+    event:
+      React.PointerEvent<HTMLCanvasElement>,
+  ) {
+    if (!project.vinyl.url) {
+      return;
+    }
+
+    const position =
+      getPointerPosition(event);
+
+    if (!position) {
+      return;
+    }
+
+    if (
+      !isPointerOverVinyl(
+        position.x,
+        position.y,
+      )
+    ) {
+      return;
+    }
+
+    event.currentTarget.setPointerCapture(
+      event.pointerId,
+    );
+
+    setIsDragging(true);
+  }
+
+  function handlePointerMove(
+    event:
+      React.PointerEvent<HTMLCanvasElement>,
+  ) {
+    if (!isDragging) {
+      return;
+    }
+
+    const position =
+      getPointerPosition(event);
+
+    if (!position) {
+      return;
+    }
+
+    onVinylChange({
+      x: Math.max(
+        0,
+        Math.min(1, position.x),
+      ),
+
+      y: Math.max(
+        0,
+        Math.min(1, position.y),
+      ),
+    });
+  }
+
+  function handlePointerUp(
+    event:
+      React.PointerEvent<HTMLCanvasElement>,
+  ) {
+    if (!isDragging) {
+      return;
+    }
+
+    if (
+      event.currentTarget.hasPointerCapture(
+        event.pointerId,
+      )
+    ) {
+      event.currentTarget.releasePointerCapture(
+        event.pointerId,
+      );
+    }
+
+    setIsDragging(false);
+  }
 
   return (
     <div className="video-preview">
       <canvas
         ref={canvasRef}
-        className="video-preview__canvas"
+        className={
+          isDragging
+            ? "video-preview__canvas video-preview__canvas--dragging"
+            : "video-preview__canvas"
+        }
+        onPointerDown={
+          handlePointerDown
+        }
+        onPointerMove={
+          handlePointerMove
+        }
+        onPointerUp={
+          handlePointerUp
+        }
+        onPointerCancel={
+          handlePointerUp
+        }
       />
     </div>
   );

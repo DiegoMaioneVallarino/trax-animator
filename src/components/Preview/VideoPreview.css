@@ -21,3 +21,16 @@
     0 20px 60px
     rgba(0, 0, 0, 0.35);
 }
+
+.video-preview__canvas {
+  touch-action: none;
+  cursor: default;
+}
+
+.video-preview__canvas:hover {
+  cursor: grab;
+}
+
+.video-preview__canvas--dragging {
+  cursor: grabbing;
+}
