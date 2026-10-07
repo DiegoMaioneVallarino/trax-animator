@@ -5,6 +5,9 @@ import type {
 import {
   renderFrame,
 } from "./renderFrame";
+import type {
+  AudioActivity,
+} from "../audio/getAudioActivity";
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
@@ -24,26 +27,28 @@ export class Renderer {
     this.ctx = ctx;
   }
 
-  render(
-    project: VideoProject,
-    backgroundImage:
-      HTMLImageElement | null,
-    vinylImage:
-      HTMLImageElement | null,
-    time: number,
-  ) {
-    this.ctx.canvas.width =
-      project.output.width;
+render(
+  project: VideoProject,
+  backgroundImage:
+    HTMLImageElement | null,
+  vinylImage:
+    HTMLImageElement | null,
+  time: number,
+  audioActivity: AudioActivity,
+) {
+  this.ctx.canvas.width =
+    project.output.width;
 
-    this.ctx.canvas.height =
-      project.output.height;
+  this.ctx.canvas.height =
+    project.output.height;
 
-    renderFrame({
-      ctx: this.ctx,
-      project,
-      backgroundImage,
-      vinylImage,
-      time,
-    });
-  }
+  renderFrame({
+    ctx: this.ctx,
+    project,
+    backgroundImage,
+    vinylImage,
+    time,
+    audioActivity,
+  });
+}
 }

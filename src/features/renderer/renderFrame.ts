@@ -1,3 +1,4 @@
+import { getAudioActivity } from "../audio/getAudioActivity";
 import type {
   RenderFrameOptions,
 } from "./renderer.types";
@@ -8,6 +9,7 @@ export function renderFrame({
   backgroundImage,
   vinylImage,
   time,
+  audioActivity,
 }: RenderFrameOptions) {
   const {
     width,
@@ -38,14 +40,68 @@ if (backgroundImage) {
   );
 }
 
-  if (vinylImage) {
-    drawVinyl(
-      ctx,
-      vinylImage,
-      project,
-      time,
+ if (vinylImage) {
+  drawVinyl(
+    ctx,
+    vinylImage,
+    project,
+    time,
+    audioActivity,
+  );
+}
+if (audioActivity.hatTrigger) {
+  const frame =
+    ctx.getImageData(
+      0,
+      0,
+      width,
+      height,
     );
+
+  const data =
+    frame.data;
+
+  for (
+    let i = 0;
+    i < data.length;
+    i += 4
+  ) {
+    data[i] =
+      255 - data[i];
+
+    data[i + 1] =
+      255 - data[i + 1];
+
+    data[i + 2] =
+      255 - data[i + 2];
   }
+
+  ctx.putImageData(
+    frame,
+    0,
+    0,
+  );
+}
+  if (audioActivity.snare > 0) {
+  ctx.save();
+
+  ctx.fillStyle =
+    `rgba(
+      255,
+      255,
+      255,
+      ${audioActivity.snare * 0.16}
+    )`;
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height,
+  );
+
+  ctx.restore();
+}
 }
 
 function drawBackground(
@@ -175,6 +231,8 @@ function drawVinyl(
   image: HTMLImageElement,
   project: RenderFrameOptions["project"],
   time: number,
+  audioActivity:
+    RenderFrameOptions["audioActivity"],
 ) {
   const {
     width,
@@ -184,9 +242,15 @@ function drawVinyl(
   const vinyl =
     project.vinyl;
 
-  const diameter =
-    Math.min(width, height) *
-    vinyl.size;
+const bassPulse =
+  1 +
+  audioActivity.bass *
+    0.06;
+
+const diameter =
+  Math.min(width, height) *
+  vinyl.size *
+  bassPulse;
 
   const radius =
     diameter / 2;

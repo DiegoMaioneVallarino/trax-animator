@@ -14,10 +14,20 @@ import {
 } from "../../features/renderer/Renderer";
 
 import "./VideoPreview.css";
+import type {
+  AudioAnalysis,
+} from "../../features/audio/audioAnalysis.types";
+
+import {
+  getAudioActivity,
+} from "../../features/audio/getAudioActivity";
 
 interface VideoPreviewProps {
   project: VideoProject;
   time: number;
+
+  audioAnalysis:
+    AudioAnalysis | null;
 
   onVinylChange: (
     changes: Partial<VinylSettings>,
@@ -48,6 +58,7 @@ function loadImage(
 export function VideoPreview({
   project,
   time,
+  audioAnalysis,
   onVinylChange,
 }: VideoPreviewProps) {
   const canvasRef =
@@ -110,13 +121,18 @@ export function VideoPreview({
 
     const renderer =
       new Renderer(canvas);
-
+const audioActivity =
+  getAudioActivity(
+    audioAnalysis,
+    time,
+  );
     renderer.render(
-      project,
-      backgroundRef.current,
-      vinylRef.current,
-      time,
-    );
+  project,
+  backgroundRef.current,
+  vinylRef.current,
+  time,
+  audioActivity,
+);
   }, [
     project,
     time,

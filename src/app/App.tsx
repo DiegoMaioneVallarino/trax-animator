@@ -26,7 +26,13 @@ import type {
 import {
   useAudio,
 } from "../hooks/useAudio";
+import {
+  analyzeAudio,
+} from "../features/audio/analyzeAudio";
 
+import type {
+  AudioAnalysis,
+} from "../features/audio/audioAnalysis.types";
 import {
   BackgroundControls,
 } from "../components/Controls/BackgroundControls";
@@ -42,7 +48,17 @@ export default function App() {
   ] = useState<VideoProject>(
     createProject,
   );
+const [
+  audioAnalysis,
+  setAudioAnalysis,
+] = useState<AudioAnalysis | null>(
+  null,
+);
 
+const [
+  isAnalyzing,
+  setIsAnalyzing,
+] = useState(false);
   const audio = useAudio({
     url: project.audio.url,
   });
@@ -60,23 +76,47 @@ function updateBackground(
     },
   }));
 }
-  function setAudio(
-    file: File,
-  ) {
-    const url =
-      URL.createObjectURL(file);
+  async function setAudio(
+  file: File,
+) {
+  const url =
+    URL.createObjectURL(file);
 
-    setProject((current) => ({
-      ...current,
+  setProject((current) => ({
+    ...current,
 
-      audio: {
-        ...current.audio,
-        file,
-        url,
-        name: file.name,
-      },
-    }));
+    audio: {
+      ...current.audio,
+      file,
+      url,
+      name: file.name,
+    },
+  }));
+
+  setAudioAnalysis(null);
+  setIsAnalyzing(true);
+
+  try {
+    const analysis =
+      await analyzeAudio(file);
+
+    setAudioAnalysis(
+      analysis,
+    );
+
+    console.log(
+      "Audio analysis:",
+      analysis,
+    );
+  } catch (error) {
+    console.error(
+      "Audio analysis failed:",
+      error,
+    );
+  } finally {
+    setIsAnalyzing(false);
   }
+}
 
   function setBackground(
     file: File,
@@ -166,9 +206,10 @@ function updateVinyl(
       </header>
 
       <section className="app__workspace">
-        <VideoPreview
+       <VideoPreview
   project={project}
   time={audio.currentTime}
+  audioAnalysis={audioAnalysis}
   onVinylChange={updateVinyl}
 />
 
