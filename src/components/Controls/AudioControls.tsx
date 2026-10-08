@@ -1,77 +1,60 @@
 
-import type {
-  AudioDetectionSettings,
-} from "../../features/project/project.types";
+import "./Controls.css";
 
-interface AudioDetectionControlsProps {
-  settings: AudioDetectionSettings;
-  onChange: (
-    changes: Partial<AudioDetectionSettings>,
-  ) => void;
+interface AudioControlsProps {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  onToggle: () => void;
+  onSeek: (time: number) => void;
 }
 
-export function AudioDetectionControls({
-  settings,
-  onChange,
-}: AudioDetectionControlsProps) {
+export function AudioControls({
+  isPlaying,
+  currentTime,
+  duration,
+  onToggle,
+  onSeek,
+}: AudioControlsProps) {
+  const formatTime = (seconds: number) => {
+    if (!Number.isFinite(seconds)) {
+      return "0:00";
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remaining = Math.floor(seconds % 60);
+
+    return `${minutes}:${String(remaining).padStart(2, "0")}`;
+  };
+
   return (
-    <section className="audio-detection-controls">
-      <div className="audio-detection-controls__header">
-        <h3>Audio Detection</h3>
-        <p>Choose which frequency hits affect the visuals.</p>
-      </div>
+    <section className="audio-controls">
+      <h3>Audio Playback</h3>
 
-      <div className="audio-detection-controls__list">
-        <label>
-          <span>
-            <strong>Bass</strong>
-            <small>Low frequency hits</small>
-          </span>
+      <div className="audio-controls__player">
+        <button
+          type="button"
+          onClick={onToggle}
+          disabled={duration <= 0}
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
 
-          <input
-            type="checkbox"
-            checked={settings.bass}
-            onChange={(event) =>
-              onChange({
-                bass: event.target.checked,
-              })
-            }
-          />
-        </label>
+        <span>{formatTime(currentTime)}</span>
 
-        <label>
-          <span>
-            <strong>Snare</strong>
-            <small>Mid frequency hits</small>
-          </span>
+        <input
+          type="range"
+          min={0}
+          max={duration || 1}
+          step={0.01}
+          value={Math.min(currentTime, duration || 1)}
+          disabled={duration <= 0}
+          onChange={(event) => {
+            onSeek(Number(event.target.value));
+          }}
+        />
 
-          <input
-            type="checkbox"
-            checked={settings.snare}
-            onChange={(event) =>
-              onChange({
-                snare: event.target.checked,
-              })
-            }
-          />
-        </label>
-
-        <label>
-          <span>
-            <strong>Hi-hats</strong>
-            <small>High frequency hits</small>
-          </span>
-
-          <input
-            type="checkbox"
-            checked={settings.hat}
-            onChange={(event) =>
-              onChange({
-                hat: event.target.checked,
-              })
-            }
-          />
-        </label>
+        <span>{formatTime(duration)}</span>
       </div>
     </section>
   );
