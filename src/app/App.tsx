@@ -30,6 +30,18 @@ import {
   analyzeAudio,
 } from "../features/audio/analyzeAudio";
 
+import {
+  renderPreview,
+} from "../features/export/renderPreview";
+
+import {
+  ExportPanel,
+} from "../components/ExportPanel/ExportPanel";
+
+import {
+  RenderedPreview,
+} from "../components/Preview/RenderedPreview";
+
 import type {
   AudioAnalysis,
 } from "../features/audio/audioAnalysis.types";
@@ -62,6 +74,82 @@ const [
   const audio = useAudio({
     url: project.audio.url,
   });
+
+
+const [
+  isRendering,
+  setIsRendering,
+] = useState(false);
+
+const [
+  renderProgress,
+  setRenderProgress,
+] = useState(0);
+
+const [
+  renderedUrl,
+  setRenderedUrl,
+] = useState<string | null>(null);
+
+async function handleRenderPreview() {
+  if (isRendering) return;
+
+  console.log("[Trax] Render requested");
+
+  setIsRendering(true);
+  setRenderProgress(0);
+
+  try {
+    console.log("[Trax] Starting renderer");
+
+    const result = await renderPreview({
+      project,
+      audioAnalysis,
+      duration: Math.min(
+        10,
+        audio.duration || 10,
+      ),
+      fps: 30,
+      onProgress: (status) => {
+        console.log(
+          "[Trax] Progress:",
+          status.currentFrame,
+          "/",
+          status.totalFrames,
+        );
+
+        setRenderProgress(status.progress);
+      },
+    });
+
+    console.log(
+      "[Trax] Render completed:",
+      result,
+    );
+
+    setRenderedUrl((previous) => {
+      if (previous) {
+        URL.revokeObjectURL(previous);
+      }
+
+      return result.url;
+    });
+  } catch (error) {
+    console.error(
+      "[Trax] Render failed:",
+      error,
+    );
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Unknown rendering error",
+    );
+  } finally {
+    setIsRendering(false);
+  }
+}
+
 function updateBackground(
   changes: Partial<
     VideoProject["background"]
@@ -153,30 +241,34 @@ function updateBackground(
   }
 
   useEffect(() => {
-    return () => {
-      if (project.audio.url) {
-        URL.revokeObjectURL(
-          project.audio.url,
-        );
-      }
+  const url = project.audio.url;
 
-      if (project.background.url) {
-        URL.revokeObjectURL(
-          project.background.url,
-        );
-      }
+  return () => {
+    if (url) {
+      URL.revokeObjectURL(url);
+    }
+  };
+}, [project.audio.url]);
 
-      if (project.vinyl.url) {
-        URL.revokeObjectURL(
-          project.vinyl.url,
-        );
-      }
-    };
-  }, [
-    project.audio.url,
-    project.background.url,
-    project.vinyl.url,
-  ]);
+useEffect(() => {
+  const url = project.background.url;
+
+  return () => {
+    if (url) {
+      URL.revokeObjectURL(url);
+    }
+  };
+}, [project.background.url]);
+
+useEffect(() => {
+  const url = project.vinyl.url;
+
+  return () => {
+    if (url) {
+      URL.revokeObjectURL(url);
+    }
+  };
+}, [project.vinyl.url]);
 function updateVinyl(
   changes: Partial<
     VideoProject["vinyl"]
@@ -206,11 +298,24 @@ function updateVinyl(
       </header>
 
       <section className="app__workspace">
-       <VideoPreview
-  project={project}
-  time={audio.currentTime}
-  audioAnalysis={audioAnalysis}
-  onVinylChange={updateVinyl}
+{renderedUrl ? (
+  <RenderedPreview
+    url={renderedUrl}
+    audioUrl={project.audio.url}
+  />
+) : (
+  <VideoPreview
+    project={project}
+    time={audio.currentTime}
+    audioAnalysis={audioAnalysis}
+    onVinylChange={updateVinyl}
+  />
+)}
+
+<ExportPanel
+  isRendering={isRendering}
+  progress={renderProgress}
+  onRender={handleRenderPreview}
 />
 
         <UploadPanel

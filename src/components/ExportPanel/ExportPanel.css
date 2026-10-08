@@ -1,0 +1,58 @@
+.export-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+}
+
+.export-panel h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.export-panel p {
+  margin: 6px 0 0;
+  color: #888;
+  font-size: 12px;
+}
+
+.export-panel button {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f1f1;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-panel button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.export-panel__progress {
+  position: relative;
+  height: 24px;
+  overflow: hidden;
+  background: #303030;
+  border-radius: 6px;
+}
+
+.export-panel__progress-fill {
+  height: 100%;
+  background: #9d9dff;
+  transition: width 100ms;
+}
+
+.export-panel__progress span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  color: white;
+}
