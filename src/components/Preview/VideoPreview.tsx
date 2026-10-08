@@ -121,11 +121,11 @@ export function VideoPreview({
 
     const renderer =
       new Renderer(canvas);
-const audioActivity =
-  getAudioActivity(
-    audioAnalysis,
-    time,
-  );
+const audioActivity = getAudioActivity(
+  audioAnalysis,
+  time,
+  project.audioDetection,
+);
     renderer.render(
   project,
   backgroundRef.current,

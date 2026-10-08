@@ -9,7 +9,11 @@ export const defaultProject: VideoProject = {
     duration: 0,
     name: null,
   },
-
+audioDetection: {
+  bass: true,
+  snare: true,
+  hat: true,
+},
   background: {
   file: null,
   url: null,

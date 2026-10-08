@@ -2,6 +2,9 @@ import type {
   AudioAnalysis,
   AudioHit,
 } from "./audioAnalysis.types";
+import type {
+  AudioDetectionSettings,
+} from "../project/project.types";
 
 export interface AudioActivity {
   bass: number;
@@ -11,9 +14,15 @@ export interface AudioActivity {
   hatTrigger: boolean;
 }
 
+
 export function getAudioActivity(
   analysis: AudioAnalysis | null,
   time: number,
+  settings: AudioDetectionSettings = {
+    bass: true,
+    snare: true,
+    hat: true,
+  },
 ): AudioActivity {
   if (!analysis) {
     return {
@@ -24,39 +33,22 @@ export function getAudioActivity(
     };
   }
 
-  const bass =
-    getHitActivity(
-      analysis.bassHits,
-      time,
-      0.18,
-    );
-
-  const snare =
-    getHitActivity(
-      analysis.snareHits,
-      time,
-      0.12,
-    );
-
-  const hat =
-    getHitActivity(
-      analysis.hatHits,
-      time,
-      0.055,
-    );
-
-  const hatTrigger =
-    hasRecentHit(
-      analysis.hatHits,
-      time,
-      0.035,
-    );
-
   return {
-    bass,
-    snare,
-    hat,
-    hatTrigger,
+    bass: settings.bass
+      ? getHitActivity(analysis.bassHits, time, 0.18)
+      : 0,
+
+    snare: settings.snare
+      ? getHitActivity(analysis.snareHits, time, 0.12)
+      : 0,
+
+    hat: settings.hat
+      ? getHitActivity(analysis.hatHits, time, 0.055)
+      : 0,
+
+    hatTrigger: settings.hat
+      ? hasRecentHit(analysis.hatHits, time, 0.035)
+      : false,
   };
 }
 

@@ -1,0 +1,60 @@
+
+.audio-detection-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  background: #161616;
+  color: #f5f5f5;
+}
+
+.audio-detection-controls__header h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.audio-detection-controls__header p {
+  margin: 0;
+  color: #888;
+  font-size: 12px;
+}
+
+.audio-detection-controls__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audio-detection-controls__list label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.audio-detection-controls__list label span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.audio-detection-controls__list strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.audio-detection-controls__list small {
+  color: #777;
+  font-size: 11px;
+}
+
+.audio-detection-controls__list input {
+  width: 17px;
+  height: 17px;
+  accent-color: #78aaff;
+  cursor: pointer;
+}

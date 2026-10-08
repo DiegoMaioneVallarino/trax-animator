@@ -167,10 +167,11 @@ export async function renderPreview({
       for (let frame = 0; frame < totalFrames; frame++) {
         const time = frame / fps;
 
-        const audioActivity = getAudioActivity(
-          audioAnalysis,
-          time,
-        );
+       const audioActivity = getAudioActivity(
+  audioAnalysis,
+  time,
+  project.audioDetection,
+);
 
         renderer.render(
           renderProject,

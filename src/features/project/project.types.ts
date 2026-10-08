@@ -50,7 +50,11 @@ export interface VinylSettings {
   shadowOffsetX: number;
   shadowOffsetY: number;
 }
-
+export interface AudioDetectionSettings {
+  bass: boolean;
+  snare: boolean;
+  hat: boolean;
+}
 export interface OutputSettings {
   width: number;
   height: number;
@@ -63,4 +67,5 @@ export interface VideoProject {
   background: BackgroundSettings;
   vinyl: VinylSettings;
   output: OutputSettings;
+  audioDetection: AudioDetectionSettings;
 }

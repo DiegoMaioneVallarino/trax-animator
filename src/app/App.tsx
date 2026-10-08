@@ -48,7 +48,9 @@ import type {
 import {
   useAudio,
 } from "../hooks/useAudio";
-
+import {
+  AudioDetectionControls,
+} from "../components/Controls/AudioDetectionControls";
 import {
   analyzeAudio,
 } from "../features/audio/analyzeAudio";
@@ -126,7 +128,17 @@ export default function App() {
       }
     };
   }, []);
-
+function updateAudioDetection(
+  changes: Partial<VideoProject["audioDetection"]>,
+) {
+  setProject((current) => ({
+    ...current,
+    audioDetection: {
+      ...current.audioDetection,
+      ...changes,
+    },
+  }));
+}
   function closeRenderedPreview() {
     if (renderedUrlRef.current) {
       URL.revokeObjectURL(
@@ -377,7 +389,10 @@ export default function App() {
           background={project.background}
           onChange={updateBackground}
         />
-
+<AudioDetectionControls
+  settings={project.audioDetection}
+  onChange={updateAudioDetection}
+/>
         {/* Editor audio playback */}
 
         {!renderedUrl && (

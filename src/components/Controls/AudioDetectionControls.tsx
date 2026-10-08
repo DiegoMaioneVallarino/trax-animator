@@ -1,3 +1,4 @@
+import "./AudioDetectionControls.css";
 
 import type {
   AudioDetectionSettings,
